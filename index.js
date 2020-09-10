@@ -15,10 +15,6 @@ const requestLogger = (request, response, next) => {
     console.log('---')
     next()
 }
-  
-const unknownEndpoint = (request, response) => {
-    response.status(404).send({ error: 'unknown endpoint' })
-}
 
 app.use(requestLogger)
 
@@ -59,7 +55,8 @@ app.get('/api/notes', (request, response) => {
 // GET NOTE ID
 app.get('/api/notes/:id', (request, response, next) => {
     Note.findById(request.params.id).then(note => {
-      if (note) {        
+      if (note) 
+      {        
         response.json(note)      
       } 
       else 
@@ -80,7 +77,7 @@ app.delete('/api/notes/:id', (request, response, next) => {
 })
 
 // POST A NOTE
-app.post('/api/notes', (request, response) => {
+app.post('/api/notes', (request, response, next) => {
     const body = request.body
   
     if (body.content === undefined) {
@@ -93,9 +90,11 @@ app.post('/api/notes', (request, response) => {
       date: new Date(),
     })
   
-    note.save().then(savedNote => {
-      response.json(savedNote)
-    })
+    note
+      .save()
+      .then(savedNote => savedNote.toJSON())
+      .then(savedAndFormattedNote => response.json(savedAndFormattedNote))
+      .catch(error => next(error))
 })
 
 // UPDATE IMPORTANCE OF NOTE
@@ -115,6 +114,10 @@ app.put('/api/notes/:id', (request, response, next) => {
 })
 
 // UNKNOWN ENDPOINT
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
+
 app.use(unknownEndpoint)
 
 // ERROR HANDLERS
@@ -124,6 +127,10 @@ const errorHandler = (error, request, response, next) => {
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
   } 
+  else if (error.name === 'ValidationError') 
+  {   
+    return response.status(400).json({ error: error.message })
+  }
 
   next(error)
 }
