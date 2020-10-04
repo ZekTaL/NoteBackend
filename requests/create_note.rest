@@ -1,7 +1,9 @@
 POST http://localhost:3001/api/notes
 Content-Type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Inpla3QiLCJpZCI6IjVmNzgwZWQ0MmE5MWFmNDc2YzdiY2ZiMCIsImlhdCI6MTYwMTcwOTc2N30.kk0qnp3HWMlVCniYPmcSYY9V8e0xxwFu0Fd_V0l2En8
 
 {
-    "content": "lol",
-    "important": false
+    "content": "test token note",
+    "important": false,
+    "userId": "5f780ed42a91af476c7bcfb0"
 }
